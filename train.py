@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # strategy = DeepSpeedStrategy()
     
     tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased', truncation=True, do_lower_case=True)
-    dm = lmaoDataset(datadir='jigsaw-toxic-comment-classification-challenge/clean_train_data.csv',
+    dm = lmaoDataset(datadir=config.DATA_DIR,
                           batch_size=config.BATCH_SIZE,
                           tokenizer=tokenizer,
                           max_len=config.MAX_LEN,

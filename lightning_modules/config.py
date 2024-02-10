@@ -11,3 +11,5 @@ ACCELERATOR = "gpu"
 DEVICES = [0]
 PRECISION = "16-mixed"
 LOGS_DIR = "logs/"
+
+DATA_DIR = 'trial_set/clean_train_data.csv',
