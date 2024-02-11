@@ -21,7 +21,7 @@ if __name__=='__main__':
     
     val_dataloader = DataLoader(dataset=val_set, batch_size=config.BATCH_SIZE,
                                   shuffle=True, num_workers=config.NUM_WORKERS)
-    
+    print(len(train_dataloader))
     model = DistilBERTClass()
     model.to(device)
     

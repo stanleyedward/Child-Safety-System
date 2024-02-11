@@ -23,17 +23,21 @@ def train_step(epoch: int,
     )
   
     
-    for batch, data in tqdm(enumerate(dataloader, 0)):
+    for batch, data in progress_bar:
         
         ids = data['ids'].to(device, dtype = torch.long)
         mask = data['mask'].to(device, dtype = torch.long)
         token_type_ids = data['token_type_ids'].to(device, dtype = torch.long)
         targets = data['targets'].to(device, dtype = torch.float)
+
         outputs = model(ids, mask, token_type_ids).squeeze(dim=1)
-        optimizer.zero_grad()
         loss = loss_fn(outputs, targets)
         train_loss +=loss.item()
-        
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
         preds = torch.round(torch.sigmoid(outputs))
         train_acc += torch.eq(targets, preds).sum().item()/len(preds)
         
@@ -66,7 +70,7 @@ def test_step(epoch: int,
 
 
     with torch.inference_mode(): 
-        for batch, data in tqdm(enumerate(dataloader, 0)):
+        for batch, data in progress_bar:
         
             ids = data['ids'].to(device, dtype = torch.long)
             mask = data['mask'].to(device, dtype = torch.long)
@@ -75,15 +79,11 @@ def test_step(epoch: int,
 
             outputs = model(ids, mask, token_type_ids)
             loss = loss_fn(outputs, targets)
-            test_loss +=loss.item()
+            test_loss += loss.item()
 
-            if outputs.item() >= 0.5:
-                pred = 1
-            
-            else:
-                pred = 0
-            
-            test_acc += (pred == targets).sum().item()/len(outputs)
+            preds = torch.round(torch.sigmoid(outputs))
+            test_acc += torch.eq(targets, preds).sum().item()/len(preds)
+
 
             progress_bar.set_postfix(
                 {
@@ -106,12 +106,13 @@ def train(model: torch.nn.Module,
           disable_progress_bar: bool = False,
           ) -> Dict[str, List]:
 
-  results = {"train_loss": [],
-      "train_acc": [],
-      "test_loss": [],
-      "test_acc": [],
-      "train_epoch_time": [],
-      "test_epoch_time": []
+  results = {
+    #   "train_loss": [],
+    #   "train_acc": [],
+    #   "test_loss": [],
+    #   "test_acc": [],
+    #   "train_epoch_time": [],
+    #   "test_epoch_time": []
   }
 
   for epoch in tqdm(range(epochs), disable=disable_progress_bar):
@@ -147,12 +148,12 @@ def train(model: torch.nn.Module,
           f"test_epoch_time: {test_epoch_time:.4f}"
       )
 
-      results["train_loss"].append(train_loss)
-      results["train_acc"].append(train_acc)
-      results["test_loss"].append(test_loss)
-      results["test_acc"].append(test_acc)
-      results["train_epoch_time"].append(train_epoch_time)
-      results["test_epoch_time"].append(test_epoch_time)
+    #   results["train_loss"].append(train_loss)
+    #   results["train_acc"].append(train_acc)
+    #   results["test_loss"].append(test_loss)
+    #   results["test_acc"].append(test_acc)
+    #   results["train_epoch_time"].append(train_epoch_time)
+    #   results["test_epoch_time"].append(test_epoch_time)
 
   return results
 

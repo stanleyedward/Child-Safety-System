@@ -1,5 +1,5 @@
 #Train params
-BATCH_SIZE = 6
+BATCH_SIZE = 10
 MAX_LEN = 512
 EPOCHS = 1
 LEARNING_RATE = 1e-05
